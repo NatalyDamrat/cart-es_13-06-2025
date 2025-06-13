@@ -9,7 +9,7 @@
 </head>
 <body>
   <header>
-    <h1>Nome do Aluno - Número - Turma</h1>
+    <h1>Nome do Aluno: Nataly Damrat - Número: 25 - Turma: 2B</h1>
   </header>
 
   <main>
@@ -27,7 +27,7 @@
       const article = document.createElement('article');
       article.className = 'cartao';
 
-      // Cria conteúdo interno do cartão
+      // Conteúdo do cartão
       article.innerHTML = `
         <div class="cartao__conteudo" tabindex="0" aria-pressed="false" role="button">
           <h3 class="categoria">${categoria}</h3>
@@ -36,12 +36,12 @@
         </div>
       `;
 
-      // Adiciona evento para virar o cartão ao clicar ou pressionar Enter
+      // Evento de clique e teclado para virar o cartão
       const conteudo = article.querySelector('.cartao__conteudo');
 
       conteudo.addEventListener('click', () => toggleCartao(conteudo));
       conteudo.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ' ) {
+        if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           toggleCartao(conteudo);
         }
@@ -50,35 +50,34 @@
       container.appendChild(article);
     }
 
-    // Função para virar o cartão
+    // Função para alternar o cartão
     function toggleCartao(conteudo) {
       const estaVirado = conteudo.getAttribute('aria-pressed') === 'true';
 
-      // Alterna estados
+      // Alterna o estado
       conteudo.setAttribute('aria-pressed', String(!estaVirado));
       
       const pergunta = conteudo.querySelector('.pergunta');
       const resposta = conteudo.querySelector('.resposta');
 
       if (estaVirado) {
-        // Volta para pergunta
+        // Voltar à pergunta
         pergunta.setAttribute('aria-hidden', 'false');
         resposta.setAttribute('aria-hidden', 'true');
       } else {
-        // Mostra resposta
+        // Mostrar resposta
         pergunta.setAttribute('aria-hidden', 'true');
         resposta.setAttribute('aria-hidden', 'false');
       }
     }
 
-    // Carregar perguntas do arquivo externo
+    // Carregar perguntas ao iniciar
     document.addEventListener('DOMContentLoaded', () => {
       if (typeof perguntas !== 'undefined' && Array.isArray(perguntas)) {
         perguntas.forEach(({categoria, pergunta, resposta}) => {
           criaCartao(categoria, pergunta, resposta);
         });
       } else {
-        // Caso não tenha perguntas carregadas
         document.getElementById('container').innerHTML = '<p>Carregue as perguntas corretamente.</p>';
       }
     });
