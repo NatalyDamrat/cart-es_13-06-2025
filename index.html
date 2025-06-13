@@ -2,133 +2,86 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Site de Flashcards</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 0;
-      padding: 20px;
-    }
-
-    h1 {
-      margin-bottom: 20px;
-    }
-
-    #flashcard {
-      width: 300px;
-      height: 200px;
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5em;
-      cursor: pointer;
-      margin-bottom: 20px;
-      padding: 20px;
-      text-align: center;
-      transition: transform 0.6s;
-      perspective: 1000px;
-    }
-
-    #flashcard.flipped {
-      transform: rotateY(180deg);
-    }
-
-    #buttons {
-      display: flex;
-      gap: 10px;
-    }
-
-    button {
-      padding: 10px 20px;
-      font-size: 1em;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      background-color: #007bff;
-      color: white;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartões Interativos</title>
+  <!-- Link para o CSS externo -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Flashcards</h1>
-  <div id="flashcard">Clique para virar</div>
-  <div id="buttons">
-    <button id="prev">Anterior</button>
-    <button id="next">Próximo</button>
-  </div>
+  <header>
+    <h1>Nome do Aluno - Número - Turma</h1>
+  </header>
 
+  <main>
+    <section id="container" aria-label="Cartões interativos"></section>
+  </main>
+
+  <!-- Script de perguntas e lógica -->
+  <script src="perguntas.js"></script>
   <script>
-    const flashcards = [
-      { pergunta: "Qual é a capital do Brasil?", resposta: "Brasília" },
-      { pergunta: "Quem pintou a Mona Lisa?", resposta: "Leonardo da Vinci" },
-      { pergunta: "4 + 4 = ?", resposta: "8" },
-      { pergunta: "Maior planeta do sistema solar?", resposta: "Júpiter" }
-    ];
+    // Função para criar cartões
+    function criaCartao(categoria, pergunta, resposta) {
+      const container = document.getElementById('container');
 
-    let indiceAtual = 0;
-    let estaVirado = false;
+      // Cria elemento article para o cartão
+      const article = document.createElement('article');
+      article.className = 'cartao';
 
-    const card = document.getElementById('flashcard');
-    const btnPrev = document.getElementById('prev');
-    const btnNext = document.getElementById('next');
+      // Cria conteúdo interno do cartão
+      article.innerHTML = `
+        <div class="cartao__conteudo" tabindex="0" aria-pressed="false" role="button">
+          <h3 class="categoria">${categoria}</h3>
+          <div class="pergunta" aria-hidden="false"><p>${pergunta}</p></div>
+          <div class="resposta" aria-hidden="true"><p>${resposta}</p></div>
+        </div>
+      `;
 
-    function atualizarFlashcard() {
-      const { pergunta, resposta } = flashcards[indiceAtual];
-      card.textContent = pergunta;
-      // Garante que o cartão esteja virado para frente ao mudar
-      if (estaVirado) {
-        card.classList.remove('flipped');
-        estaVirado = false;
-      }
+      // Adiciona evento para virar o cartão ao clicar ou pressionar Enter
+      const conteudo = article.querySelector('.cartao__conteudo');
+
+      conteudo.addEventListener('click', () => toggleCartao(conteudo));
+      conteudo.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ' ) {
+          e.preventDefault();
+          toggleCartao(conteudo);
+        }
+      });
+
+      container.appendChild(article);
     }
 
-    function virar() {
-      estaVirado = !estaVirado;
-      const { resposta } = flashcards[indiceAtual];
+    // Função para virar o cartão
+    function toggleCartao(conteudo) {
+      const estaVirado = conteudo.getAttribute('aria-pressed') === 'true';
+
+      // Alterna estados
+      conteudo.setAttribute('aria-pressed', String(!estaVirado));
+      
+      const pergunta = conteudo.querySelector('.pergunta');
+      const resposta = conteudo.querySelector('.resposta');
+
       if (estaVirado) {
-        card.textContent = resposta;
-        card.classList.add('flipped');
+        // Volta para pergunta
+        pergunta.setAttribute('aria-hidden', 'false');
+        resposta.setAttribute('aria-hidden', 'true');
       } else {
-        const { pergunta } = flashcards[indiceAtual];
-        card.textContent = pergunta;
-        card.classList.remove('flipped');
+        // Mostra resposta
+        pergunta.setAttribute('aria-hidden', 'true');
+        resposta.setAttribute('aria-hidden', 'false');
       }
     }
 
-    function mostrarAnterior() {
-      if (indiceAtual > 0) {
-        indiceAtual--;
-        atualizarFlashcard();
+    // Carregar perguntas do arquivo externo
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof perguntas !== 'undefined' && Array.isArray(perguntas)) {
+        perguntas.forEach(({categoria, pergunta, resposta}) => {
+          criaCartao(categoria, pergunta, resposta);
+        });
+      } else {
+        // Caso não tenha perguntas carregadas
+        document.getElementById('container').innerHTML = '<p>Carregue as perguntas corretamente.</p>';
       }
-    }
-
-    function mostrarProximo() {
-      if (indiceAtual < flashcards.length - 1) {
-        indiceAtual++;
-        atualizarFlashcard();
-      }
-    }
-
-    // Eventos
-    card.addEventListener('click', virar);
-    btnPrev.addEventListener('click', mostrarAnterior);
-    btnNext.addEventListener('click', mostrarProximo);
-
-    // Inicializa o primeiro flashcard
-    atualizarFlashcard();
+    });
   </script>
 </body>
 </html>
