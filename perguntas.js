@@ -1,4 +1,4 @@
-// Exemplo de perguntas
+// Array de perguntas
 const perguntas = [
   {
     categoria: 'Geografia',
