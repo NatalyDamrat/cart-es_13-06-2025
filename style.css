@@ -1,0 +1,83 @@
+/* Estilos básicos para o site */
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fafafa;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 1.8em;
+  margin: 0;
+}
+
+main {
+  width: 100%;
+  max-width: 800px;
+}
+
+#container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+/* Estilo do cartão */
+.cartao {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 15px;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cartao:hover,
+.cartao:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Conteúdo interno do cartão */
+.cartao__conteudo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cartao__conteudo h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+  color: #333;
+}
+
+.pergunta,
+.resposta {
+  font-size: 1em;
+  padding: 10px;
+  text-align: center;
+}
+
+.resposta {
+  display: none;
+}
+
+/* Mostrar resposta quando virado */
+.cartao__conteudo[aria-pressed="true"] .resposta {
+  display: block;
+}
+
+.cartao__conteudo[aria-pressed="true"] .pergunta {
+  display: none;
+}
